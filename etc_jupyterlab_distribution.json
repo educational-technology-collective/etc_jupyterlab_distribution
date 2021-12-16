@@ -1,0 +1,5 @@
+{
+  "load_extensions": {
+    "etc_jupyterlab_distribution/extension": true
+  }
+}

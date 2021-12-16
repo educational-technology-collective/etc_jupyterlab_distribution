@@ -1,0 +1,2 @@
+[run]
+omit = etc_jupyterlab_distribution/tests/*
