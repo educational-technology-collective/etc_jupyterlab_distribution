@@ -154,3 +154,4 @@ etc_jupyterlab_distribution/labextension/*.tgz
 
 # Packed lab extensions
 etc_jupyterlab_distribution/labextension
+.github
