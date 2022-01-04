@@ -6,20 +6,20 @@
 
 import { createTestModel } from './utils';
 
-import { ExampleModel } from '..';
+import { DistributionModel } from '..';
 
 describe('Example', () => {
   describe('ExampleModel', () => {
     it('should be createable', () => {
-      const model = createTestModel(ExampleModel);
-      expect(model).toBeInstanceOf(ExampleModel);
+      const model = createTestModel(DistributionModel);
+      expect(model).toBeInstanceOf(DistributionModel);
       expect(model.get('value')).toEqual('Hello World');
     });
 
     it('should be createable with a value', () => {
       const state = { value: 'Foo Bar!' };
-      const model = createTestModel(ExampleModel, state);
-      expect(model).toBeInstanceOf(ExampleModel);
+      const model = createTestModel(DistributionModel, state);
+      expect(model).toBeInstanceOf(DistributionModel);
       expect(model.get('value')).toEqual('Foo Bar!');
     });
   });
