@@ -91,6 +91,7 @@ export class DistributionView extends DOMWidgetView {
       }, coord);
 
       this.model.set('coord', { ...coord });
+      
       this.model.save_changes();
     });
 
