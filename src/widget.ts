@@ -27,7 +27,8 @@ export class DistributionModel extends DOMWidgetModel {
       _view_module: DistributionModel.view_module,
       _view_module_version: DistributionModel.view_module_version,
       value: null,
-      coord: {}
+      paths: [],
+      distribution: []
     };
   }
 
@@ -48,7 +49,8 @@ export class DistributionView extends DOMWidgetView {
 
   private _svg: SVGElement;
   private _smartBoard: SmartBoard;
-  private _height: number = 250;
+  private _height: number = 350;
+  private _width: number = 450;
   // private _emailInput: HTMLInputElement;
 
   render() {
@@ -58,17 +60,15 @@ export class DistributionView extends DOMWidgetView {
     this._svg = this._smartBoard.svg;
 
     this._svg.style.height = `${this._height}px`;
+    this._svg.style.width = `${this._width}px`;
 
-    this.el.classList.add('custom-widget');
+    this.el.classList.add('distribution-widget');
 
     this.el.appendChild(this._svg);
 
-    console.log(this._svg)
+    this.model.on('change:paths', this.pathsChanged, this);
+    this.model.on('change:distribution', this.distributionChanged, this);
 
-    this.model.on('change:value', this.value_changed, this);
-    this.model.on('change:coord', this.value_changed, this);
-
-    let coord: { [key: number]: number } = {};
 
     this._smartBoard.target.addEventListener('new_entity', (event: Event) => {
 
@@ -78,39 +78,21 @@ export class DistributionView extends DOMWidgetView {
 
       let paths: Array<Array<number>> = entity.path;
 
-      coord = paths.reduce((p, c) => {
+      for (let path of paths) {
+        path[1] = this._height - path[1];
+      }
 
-        let y = this._height - c[1];
+      this.model.set('paths', [...paths]);
 
-        if (!coord.hasOwnProperty(c[0]) || coord[c[0]] < y) {
-
-          coord[c[0]] = y;
-        }
-
-        return coord;
-      }, coord);
-
-      this.model.set('coord', { ...coord });
-      
       this.model.save_changes();
     });
-
-    // this._emailInput = document.createElement('input');
-    // this._emailInput.type = 'email';
-    // this._emailInput.value = 'example@example.com';
-    // this._emailInput.disabled = true;
-    // this.el.appendChild(this._emailInput);
-
-    // this.el.classList.add('custom-widget');
-
-    // this.value_changed();
-
-    // this.model.on('change:value', this.value_changed, this);
   }
 
-  value_changed() {
-    console.log('value', this.model.get('value'));
-    console.log('coord', this.model.get('coord'));
-    //this.el.textContent = this.model.get('value');
+  pathsChanged() {
+    console.log('paths', this.model.get('paths'));
+  }
+
+  distributionChanged() {
+    console.log('distribution', this.model.get('distribution'));
   }
 }

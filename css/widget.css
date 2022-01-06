@@ -1,4 +1,11 @@
-.custom-widget {
-  background-color: lightseagreen;
-  padding: 0px 2px;
+.distribution-widget {
+  background-color: #eee;
+  padding: 0;
+  background: #eee;
+}
+
+.distribution-widget > svg {
+  background: #fff;
+  padding: 0;
+  margin: 5px 5px 2px 5px;
 }

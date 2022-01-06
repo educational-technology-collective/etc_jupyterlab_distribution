@@ -4,6 +4,26 @@
 # Copyright (c) ETC.
 # Distributed under the terms of the Modified BSD License.
 
+import logging
+import sys
+import traceback
+
+
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+map(log.removeHandler, list(log.handlers))
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.DEBUG)
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+log.addHandler(ch)
+fh = logging.FileHandler('widget.log')
+fh.setLevel(logging.DEBUG)
+log.addHandler(fh)
+
+
 """
 TODO: Add module docstring
 """
@@ -29,30 +49,64 @@ class DistributionWidget(DOMWidget, ValueWidget):
 
     value = Any().tag(sync=True)
 
-    coord = Dict().tag(sync=True)
+    paths = List().tag(sync=True)
 
-    @validate('coord')
-    def _valid_value(self, proposal):
+    line = Dict({}).tag(sync=True)
 
-        X = np.array([int(key) for key in proposal.value.keys()])
+    distribution = List().tag(sync=True)
 
-        Y = np.array([int(key) for key in proposal.value.values()])
+    @observe('paths')
+    def _valid_value(self, change):
+        
+        try:
 
-        pts = np.vstack((X, Y))
+            paths = self.paths
 
-        tck, u = splprep(pts, s=0.0)
+            paths = np.array(paths)
 
-        u_new = np.linspace(u.min(), u.max(), 10000)
+            xs = paths[:, 0]
 
-        x, y = splev(u_new, tck)
+            ys = paths[:, 1]
 
-        data = np.repeat(x, np.ceil(y).astype(int))
+            x2s = range(xs.min(), xs.max()+1)
 
-        hist = np.histogram(data, bins=5)
+            y2s = np.interp(x2s, xs, ys)
 
-        hist_dist = stats.rv_histogram(hist)
+            for index in range(0, len(x2s)):
 
-        self.value = hist_dist
+                x = x2s[index]
 
-        return proposal['value']
+                y = y2s[index]
+
+                if x not in self.line or self.line[x] < y:
+                    
+                    self.line[x] = y
+
+            x3s = np.array(list(self.line.keys())).astype(int)
+            y3s = np.array(list(self.line.values())).astype(int)
+
+            data = np.repeat(x3s, y3s)
+
+            self.distribution = list(data)
+
+            hist = np.histogram(data, bins=max(list(self.line.keys())))
+
+            hist_dist = stats.rv_histogram(hist)
+
+            self.value = hist_dist
+
+            log.info(self.value)
+
+        except Exception as e:
+
+            if hasattr(e, 'message'):
+
+                log.error(e.message)
+
+            else:
+
+                log.error(e)
+
+            log.error(traceback.format_exc())
+
 
