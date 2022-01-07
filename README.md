@@ -1,10 +1,6 @@
 
 # @educational-technology-collective/etc_jupyterlab_distribution
 
-[![Build Status](https://travis-ci.org/Educational Technology Collective/@educational-technology-collective/etc_jupyterlab_distribution.svg?branch=master)](https://travis-ci.org/Educational Technology Collective/etc_jupyterlab_distribution)
-[![codecov](https://codecov.io/gh/Educational Technology Collective/@educational-technology-collective/etc_jupyterlab_distribution/branch/master/graph/badge.svg)](https://codecov.io/gh/Educational Technology Collective/@educational-technology-collective/etc_jupyterlab_distribution)
-
-
 A Custom Jupyter Widget Library
 
 ## Installation
@@ -12,13 +8,8 @@ A Custom Jupyter Widget Library
 You can install using `pip`:
 
 ```bash
+pip install ipywidgets
 pip install etc_jupyterlab_distribution
-```
-
-If you are using Jupyter Notebook 5.2 or earlier, you may also need to enable
-the nbextension:
-```bash
-jupyter nbextension enable --py [--sys-prefix|--user|--system] etc_jupyterlab_distribution
 ```
 
 ## Development Installation
