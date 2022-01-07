@@ -93,6 +93,8 @@ setup_args = dict(
     python_requires=">=3.6",
     install_requires = [
         'ipywidgets>=7.0.0',
+        'numpy>=1.21.2',
+        'scipy>=1.7.1'
     ],
     extras_require = {
         'test': [
