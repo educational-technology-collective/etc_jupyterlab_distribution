@@ -27,7 +27,7 @@ export class DistributionModel extends DOMWidgetModel {
       _view_module: DistributionModel.view_module,
       _view_module_version: DistributionModel.view_module_version,
       value: null,
-      paths: [],
+      entity_paths: [],
       distribution: []
     };
   }
@@ -66,33 +66,63 @@ export class DistributionView extends DOMWidgetView {
 
     this.el.appendChild(this._svg);
 
-    this.model.on('change:paths', this.pathsChanged, this);
+    this.model.on('change:entity_paths', this.entityPathsChanged, this);
     this.model.on('change:distribution', this.distributionChanged, this);
 
+    this._smartBoard.target.addEventListener('drawing_changed', (event: Event) => {
 
-    this._smartBoard.target.addEventListener('new_entity', (event: Event) => {
+      console.log('drawing_changed');
 
-      console.log('new_entity');
+      let entities = (event as CustomEvent).detail;
 
-      let entity = (event as CustomEvent).detail;
+      let entity_paths = [];
 
-      let paths: Array<Array<number>> = entity.path;
+      for (let entity of entities) {
 
-      for (let path of paths) {
-        path[1] = this._height - path[1];
+        if (entity.parts.every((part: any) => part.hasOwnProperty('x') && part.hasOwnProperty('y'))) {
+
+          entity_paths.push(entity.parts);
+        }
       }
 
-      this.model.set('paths', [...paths]);
+      this.model.set('entity_paths', entity_paths);
 
       this.model.save_changes();
     });
   }
 
-  pathsChanged() {
-    console.log('paths', this.model.get('paths'));
+  entityPathsChanged() {
+    console.log('entity_paths', this.model.get('entity_paths'));
   }
 
   distributionChanged() {
     console.log('distribution', this.model.get('distribution'));
   }
 }
+
+
+// if (part.x < this.model.get('coord_xmin')) {
+
+//   this.model.set('coord_xmin', part.x);
+
+//   this.model.save_changes();
+// }
+// else if (part.x > this.model.get('coord_xmax')) {
+
+//   this.model.set('coord_xmax', part.x);
+
+//   this.model.save_changes();
+// }
+
+// if (part.y < this.model.get('coord_ymin')) {
+
+//   this.model.set('coord_ymin', part.y);
+
+//   this.model.save_changes();
+// }
+// else if (part.y > this.model.get('coord_ymax')) {
+
+//   this.model.set('coord_ymax', part.y);
+
+//   this.model.save_changes();
+// }

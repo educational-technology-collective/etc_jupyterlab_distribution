@@ -7,7 +7,7 @@
 import logging
 import sys
 import traceback
-
+import os
 
 
 log = logging.getLogger(__name__)
@@ -23,13 +23,12 @@ fh = logging.FileHandler('widget.log')
 fh.setLevel(logging.DEBUG)
 log.addHandler(fh)
 
-
 """
 TODO: Add module docstring
 """
 from ipywidgets import DOMWidget, ValueWidget, register
 from traitlets import Unicode, Bool, validate, TraitError, List
-from traitlets.traitlets import Any, Dict, observe
+from traitlets.traitlets import Any, Dict, Integer, observe
 from ._frontend import module_name, module_version
 import numpy as np
 from scipy.interpolate import splprep, splev
@@ -49,53 +48,60 @@ class DistributionWidget(DOMWidget, ValueWidget):
 
     value = Any().tag(sync=True)
 
-    paths = List().tag(sync=True)
+    entity_paths = List().tag(sync=True)
+
+    coord_xmin = Integer(0).tag(sync=True)
+    coord_xmax = Integer(0).tag(sync=True)
+    coord_ymin = Integer(0).tag(sync=True)
+    coord_ymax = Integer(0).tag(sync=True)
 
     line = Dict({}).tag(sync=True)
 
     distribution = List().tag(sync=True)
 
-    @observe('paths')
-    def _valid_value(self, change):
+    @observe('entity_paths')
+    def _observe_entity_paths(self, change):
         
         try:
 
-            paths = self.paths
+            log.info(self.entity_paths)
 
-            paths = np.array(paths)
+            # paths = self.paths
 
-            xs = paths[:, 0]
+            # paths = np.array(paths)
 
-            ys = paths[:, 1]
+            # xs = paths[:, 0]
 
-            x2s = range(xs.min(), xs.max()+1)
+            # ys = paths[:, 1]
 
-            y2s = np.interp(x2s, xs, ys)
+            # x2s = range(xs.min(), xs.max()+1)
 
-            for index in range(0, len(x2s)):
+            # y2s = np.interp(x2s, xs, ys)
 
-                x = x2s[index]
+            # for index in range(0, len(x2s)):
 
-                y = y2s[index]
+            #     x = x2s[index]
 
-                if x not in self.line or self.line[x] < y:
+            #     y = y2s[index]
+
+            #     if x not in self.line or self.line[x] < y:
                     
-                    self.line[x] = y
+            #         self.line[x] = y
 
-            x3s = np.array(list(self.line.keys())).astype(int)
-            y3s = np.array(list(self.line.values())).astype(int)
+            # x3s = np.array(list(self.line.keys())).astype(int)
+            # y3s = np.array(list(self.line.values())).astype(int)
 
-            data = np.repeat(x3s, y3s)
+            # data = np.repeat(x3s, y3s)
 
-            self.distribution = list(data)
+            # self.distribution = list(data)
 
-            hist = np.histogram(data, bins=max(list(self.line.keys())))
+            # hist = np.histogram(data, bins=max(list(self.line.keys())))
 
-            hist_dist = stats.rv_histogram(hist)
+            # hist_dist = stats.rv_histogram(hist)
 
-            self.value = hist_dist
+            # self.value = hist_dist
 
-            log.info(self.value)
+            # log.info(self.value)
 
         except Exception as e:
 
