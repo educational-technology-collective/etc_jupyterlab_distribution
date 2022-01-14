@@ -69,6 +69,10 @@ export class DistributionView extends DOMWidgetView {
     this.model.on('change:entity_paths', this.entityPathsChanged, this);
     this.model.on('change:distribution', this.distributionChanged, this);
 
+    this.model.set('width', this._width).save_changes();
+    this.model.set('x_min', -1).save_changes();
+    this.model.set('x_max', 1).save_changes();
+
     this._smartBoard.target.addEventListener('drawing_changed', (event: Event) => {
 
       console.log('drawing_changed');
@@ -81,22 +85,24 @@ export class DistributionView extends DOMWidgetView {
 
         if (entity.parts.every((part: any) => part.hasOwnProperty('x') && part.hasOwnProperty('y'))) {
 
-          entity_paths.push(entity.parts);
+          entity_paths.push([...entity.parts]);
         }
       }
 
-      this.model.set('entity_paths', entity_paths);
+      this.model.unset('entity_paths');
 
-      this.model.save_changes();
+      this.model.set('entity_paths', entity_paths).save_changes();
     });
   }
 
   entityPathsChanged() {
-    console.log('entity_paths', this.model.get('entity_paths'));
+    console.log('entityPathsChanged');
+    // console.log('entity_paths', this.model.get('entity_paths'));
   }
 
   distributionChanged() {
-    console.log('distribution', this.model.get('distribution'));
+    console.log('distributionChanged');
+    // console.log('distribution', this.model.get('distribution'));
   }
 }
 
