@@ -51,7 +51,6 @@ export class DistributionView extends DOMWidgetView {
   private _smartBoard: SmartBoard;
   private _height: number = 350;
   private _width: number = 450;
-  // private _emailInput: HTMLInputElement;
 
   render() {
 
@@ -70,6 +69,7 @@ export class DistributionView extends DOMWidgetView {
     this.model.on('change:distribution', this.distributionChanged, this);
 
     this.model.set('width', this._width).save_changes();
+    this.model.set('height', this._height).save_changes();
     this.model.set('x_min', -1).save_changes();
     this.model.set('x_max', 1).save_changes();
 
@@ -105,30 +105,3 @@ export class DistributionView extends DOMWidgetView {
     // console.log('distribution', this.model.get('distribution'));
   }
 }
-
-
-// if (part.x < this.model.get('coord_xmin')) {
-
-//   this.model.set('coord_xmin', part.x);
-
-//   this.model.save_changes();
-// }
-// else if (part.x > this.model.get('coord_xmax')) {
-
-//   this.model.set('coord_xmax', part.x);
-
-//   this.model.save_changes();
-// }
-
-// if (part.y < this.model.get('coord_ymin')) {
-
-//   this.model.set('coord_ymin', part.y);
-
-//   this.model.save_changes();
-// }
-// else if (part.y > this.model.get('coord_ymax')) {
-
-//   this.model.set('coord_ymax', part.y);
-
-//   this.model.save_changes();
-// }

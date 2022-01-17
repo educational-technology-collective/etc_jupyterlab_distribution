@@ -55,6 +55,7 @@ class DistributionWidget(DOMWidget, ValueWidget):
     histogram = Any().tag(sync=True)
 
     width = Integer().tag(sync=True)
+    height = Integer().tag(sync=True)
 
     x_min = Integer().tag(sync=True)
     x_max = Integer().tag(sync=True)
@@ -73,14 +74,14 @@ class DistributionWidget(DOMWidget, ValueWidget):
                 x_range = self.x_max - self.x_min
 
                 for coords in self.entity_paths:
-                        
+
                     coords_x_min = None
                     coords_x_max = None
                     
                     _xs = []
                     _ys = []
                     
-                    for coord in coords:  
+                    for coord in coords:
 
                         if coords_x_min == None or coord['x'] < coords_x_min:
 
@@ -106,11 +107,14 @@ class DistributionWidget(DOMWidget, ValueWidget):
                 xs = np.array(list(dist_map.keys()))
                 ys = np.array(list(dist_map.values()))
 
-                ys = (ys.max() - ys).astype(int)
+                # ys = (ys.max() - ys).astype(int)
+
+                ys = (self.height - ys).astype(int)
 
                 self.bins = int((xs.max() - xs.min()) + 1)
 
                 xs = ((xs / self.width) * x_range) + self.x_min
+                # Convert from pixels to x_range units.
 
                 self.distribution = list(np.repeat(xs, ys))
 
