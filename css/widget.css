@@ -1,11 +1,27 @@
-.distribution-widget {
-  background-color: #eee;
+.distribution-widget .container {
+  display: flex;
+  flex-direction: row;
   padding: 0;
-  background: #eee;
+  margin: 1em;
 }
 
-.distribution-widget > svg {
+.distribution-widget svg {
   background: #fff;
   padding: 0;
-  margin: 5px 5px 2px 5px;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.distribution-widget .input-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0 1em;
+}
+
+.distribution-widget input {
+  line-height: 1.6;
+  width: 3.2em;
+  font-size: larger;
+  margin: 0 0 1em 0;
+  text-align: center;
 }

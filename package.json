@@ -13,9 +13,9 @@
     "dist/*.js",
     "css/*.css"
   ],
-  "homepage": "https://github.com/Educational Technology Collective/@educational-technology-collective/etc_jupyterlab_distribution",
+  "homepage": "https://github.com/educational-technology-collective/etc_jupyterlab_distribution.git",
   "bugs": {
-    "url": "https://github.com/Educational Technology Collective/@educational-technology-collective/etc_jupyterlab_distribution/issues"
+    "url": "https://github.com/educational-technology-collective/etc_jupyterlab_distribution.git/issues"
   },
   "license": "BSD-3-Clause",
   "author": {
@@ -26,7 +26,7 @@
   "types": "./lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Educational Technology Collective/@educational-technology-collective/etc_jupyterlab_distribution"
+    "url": "https://github.com/educational-technology-collective/etc_jupyterlab_distribution.git"
   },
   "scripts": {
     "build": "yarn run build:lib && yarn run build:nbextension && yarn run build:labextension:dev",

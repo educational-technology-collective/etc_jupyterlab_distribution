@@ -80,6 +80,8 @@ class DistributionWidget(DOMWidget, ValueWidget):
                     
                     _xs = []
                     _ys = []
+
+                    coords = sorted(coords, key=lambda x: x['x'])
                     
                     for coord in coords:
 
