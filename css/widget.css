@@ -1,8 +1,13 @@
+.distribution-widget {
+  display: flex;
+  flex-direction: column;
+}
+
 .distribution-widget .container {
   display: flex;
   flex-direction: row;
   padding: 0;
-  margin: 1em;
+  margin: 1em 1em 0 1em;
 }
 
 .distribution-widget svg {
@@ -24,4 +29,10 @@
   font-size: larger;
   margin: 0 0 1em 0;
   text-align: center;
+}
+
+.distribution-widget .x-axis {
+  height: 24px;
+  margin: 0 0 0 1em;
+  background-color: aliceblue;
 }

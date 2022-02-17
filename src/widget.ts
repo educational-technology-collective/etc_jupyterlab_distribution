@@ -62,11 +62,14 @@ export class DistributionView extends DOMWidgetView {
     let inputContainer = document.createElement('div');
     inputContainer.classList.add('input-container');
 
-    let xMin = document.createElement('input');
-    let xMax = document.createElement('input');
+    let xMinInput = document.createElement('input');
+    xMinInput.setAttribute('value', '-1');
 
-    inputContainer.appendChild(xMin);
-    inputContainer.appendChild(xMax);
+    let xMaxInput = document.createElement('input');
+    xMaxInput.setAttribute('value', '1');
+
+    inputContainer.appendChild(xMinInput);
+    inputContainer.appendChild(xMaxInput);
 
     this._smartBoard = new SmartBoard({ parent: this.el });
 
@@ -78,7 +81,13 @@ export class DistributionView extends DOMWidgetView {
     container.appendChild(this._svg);
     container.appendChild(inputContainer);
 
+    let xAxis = document.createElement('div');
+    xAxis.classList.add('x-axis');
+    xAxis.style.width = `${this._width}px`;
+
     this.el.appendChild(container);
+
+    this.el.appendChild(xAxis);
 
     this.model.on('change:entity_paths', this.entityPathsChanged, this);
     this.model.on('change:distribution', this.distributionChanged, this);
@@ -88,7 +97,7 @@ export class DistributionView extends DOMWidgetView {
     this.model.set('x_min', -1).save_changes();
     this.model.set('x_max', 1).save_changes();
 
-    xMin.addEventListener('input', (event: Event) => {
+    xMinInput.addEventListener('input', (event: Event) => {
       console.log(event);
     });
 
