@@ -29,10 +29,21 @@
   font-size: larger;
   margin: 0 0 1em 0;
   text-align: center;
+  border: 2px solid #ddd;
 }
 
-.distribution-widget .x-axis {
+.distribution-widget .axis {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   height: 24px;
   margin: 0 0 0 1em;
-  background-color: aliceblue;
+}
+
+.distribution-widget input.invalid {
+  border: 2px dashed red;
+}
+
+svg path {
+  stroke-width: 4px;
 }

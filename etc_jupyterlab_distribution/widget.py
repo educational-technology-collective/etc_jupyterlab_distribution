@@ -27,8 +27,7 @@ log.addHandler(fh)
 TODO: Add module docstring
 """
 from ipywidgets import DOMWidget, ValueWidget, register
-from traitlets import Unicode, Bool, validate, TraitError, List, All
-from traitlets.traitlets import Any, Dict, Integer, observe
+from traitlets import Unicode, Bool, TraitError, List, All, Float, Any, Dict, Integer, observe, validate
 from ._frontend import module_name, module_version
 import numpy as np
 from scipy.interpolate import splprep, splev
@@ -47,24 +46,33 @@ class DistributionWidget(DOMWidget, ValueWidget):
     _view_module_version = Unicode(module_version).tag(sync=True)
 
     value = Any()
+    histogram = Any().tag(sync=True)
+    bins = Integer().tag(sync=True)
 
     entity_paths = List().tag(sync=True)
-
     distribution = List().tag(sync=True)
-
-    histogram = Any().tag(sync=True)
 
     width = Integer().tag(sync=True)
     height = Integer().tag(sync=True)
 
-    x_min = Integer().tag(sync=True)
-    x_max = Integer().tag(sync=True)
+    x_min = Float(-1).tag(sync=True)
+    x_max = Float(1).tag(sync=True)
 
-    bins = Integer().tag(sync=True)
+
+    @observe('x_min', 'change')
+    def _observe_x_min(self, change):
+        self.update()
+
+    @observe('x_max', 'change')
+    def _observe_x_max(self, change):
+        self.update()
 
     @observe('entity_paths', 'change')
     def _observe_entity_paths(self, change):
-        
+        self.update()
+       
+    def update(self):
+
         try:
 
             if len(self.entity_paths) > 0:
@@ -88,7 +96,7 @@ class DistributionWidget(DOMWidget, ValueWidget):
                         if coords_x_min == None or coord['x'] < coords_x_min:
 
                             coords_x_min = coord['x']
-                            # The min and max x value are needed for interpolation; hence, extract both each of the entity_paths.
+                            # The min x and max x value are needed for interpolation; hence, extract both of the entity_paths.
                         if coords_x_max == None or coord['x'] > coords_x_max:
 
                             coords_x_max = coord['x']
@@ -102,14 +110,12 @@ class DistributionWidget(DOMWidget, ValueWidget):
                     
                     for index in range(0, len(xs)):
                         
-                        if xs[index] not in dist_map or ys[index] < dist_map[xs[index]]:
+                        if xs[index] not in dist_map or ys[index] > dist_map[xs[index]]:
                             
                             dist_map[xs[index]] = ys[index]
 
                 xs = np.array(list(dist_map.keys()))
                 ys = np.array(list(dist_map.values()))
-
-                # ys = (ys.max() - ys).astype(int)
 
                 ys = (self.height - ys).astype(int)
 
@@ -124,8 +130,7 @@ class DistributionWidget(DOMWidget, ValueWidget):
 
                 self.value = stats.rv_histogram(self.histogram)
 
-                log.info(dist_map)
-                log.info('\n\n\n')
+                # log.info(f'{dist_map}\n\n\n')
 
         except Exception as e:
 
