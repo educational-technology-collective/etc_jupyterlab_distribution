@@ -32,9 +32,13 @@ from ._frontend import module_name, module_version
 import numpy as np
 from scipy.interpolate import splprep, splev
 from scipy import stats
+from scipy._lib._util import _lazyselect, _lazywhere
+from datetime import datetime
+
+log.info(f'START {datetime.now()}')
 
 @register
-class DistributionWidget(DOMWidget, ValueWidget):
+class DistributionWidget(stats.rv_continuous, DOMWidget, ValueWidget):
     """TODO: Add docstring here
     """
     _model_name = Unicode('DistributionModel').tag(sync=True)
@@ -57,7 +61,6 @@ class DistributionWidget(DOMWidget, ValueWidget):
 
     x_min = Float(-1).tag(sync=True)
     x_max = Float(1).tag(sync=True)
-
 
     @observe('x_min', 'change')
     def _observe_x_min(self, change):
@@ -119,17 +122,34 @@ class DistributionWidget(DOMWidget, ValueWidget):
 
                 ys = (self.height - ys).astype(int)
 
-                self.bins = int((xs.max() - xs.min()) + 1)
+                bins = int((xs.max() - xs.min()) + 1)
 
                 xs = ((xs / self.width) * x_range) + self.x_min
                 # Convert from pixels to x_range units.
 
-                self.distribution = list(np.repeat(xs, ys))
+                distribution = list(np.repeat(xs, ys))
 
-                self.histogram = np.histogram(self.distribution, bins=self.bins)
+                histogram = np.histogram(distribution, bins=bins)
 
-                self.value = stats.rv_histogram(self.histogram)
+                #self.value = 'TEST' #stats.rv_histogram(histogram)
 
+                self._histogram = histogram
+                if len(histogram) != 2:
+                    raise ValueError("Expected length 2 for parameter histogram")
+                self._hpdf = np.asarray(histogram[0])
+                self._hbins = np.asarray(histogram[1])
+                if len(self._hpdf) + 1 != len(self._hbins):
+                    raise ValueError("Number of elements in histogram content "
+                                    "and histogram boundaries do not match, "
+                                    "expected n and n+1.")
+                self._hbin_widths = self._hbins[1:] - self._hbins[:-1]
+                self._hpdf = self._hpdf / float(np.sum(self._hpdf * self._hbin_widths))
+                self._hcdf = np.cumsum(self._hpdf * self._hbin_widths)
+                self._hpdf = np.hstack([0.0, self._hpdf, 0.0])
+                self._hcdf = np.hstack([0.0, self._hcdf])
+                self.a = self._hbins[0]
+                self.b = self._hbins[-1]
+                
                 # log.info(f'{dist_map}\n\n\n')
 
         except Exception as e:
@@ -143,5 +163,44 @@ class DistributionWidget(DOMWidget, ValueWidget):
                 log.error(e)
 
             log.error(traceback.format_exc())
+
+    def _pdf(self, x):
+        """
+        PDF of the histogram
+        """
+        return self._hpdf[np.searchsorted(self._hbins, x, side='right')]
+
+    def _cdf(self, x):
+        """
+        CDF calculated from the histogram
+        """
+        return np.interp(x, self._hbins, self._hcdf)
+
+    def _ppf(self, x):
+        """
+        Percentile function calculated from the histogram
+        """
+        return np.interp(x, self._hcdf, self._hbins)
+
+    def _munp(self, n):
+        """Compute the n-th non-central moment."""
+        integrals = (self._hbins[1:]**(n+1) - self._hbins[:-1]**(n+1)) / (n+1)
+        return np.sum(self._hpdf[1:-1] * integrals)
+
+    def _entropy(self):
+        """Compute entropy of distribution"""
+        res = _lazywhere(self._hpdf[1:-1] > 0.0,
+                        (self._hpdf[1:-1],),
+                        np.log,
+                        0.0)
+        return -np.sum(self._hpdf[1:-1] * res * self._hbin_widths)
+
+    def _updated_ctor_param(self):
+        """
+        Set the histogram as additional constructor argument
+        """
+        dct = super()._updated_ctor_param()
+        dct['histogram'] = self._histogram
+        return dct
 
 
